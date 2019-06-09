@@ -16,6 +16,7 @@ var tourExperience = {
         renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
         fps: new Stats(),
         clock: new THREE.Clock,
+        obj: 'src/obj/building.gltf',
         textFont: 'src/fonts/criteria-thin.json',
         text: 'text'
     },
@@ -30,25 +31,29 @@ var tourExperience = {
         this.vars.scene.add(sceneWrapp);
     },
     objTexture: function (color, wireframe) {
-        return new THREE.MeshStandardMaterial({color: color, metalness: 0, side: THREE.DoubleSide, wireframe: wireframe })
+        return new THREE.MeshPhongMaterial({color: color, metalness: 0, side: THREE.DoubleSide, wireframe: wireframe })
     },
     ojbLoader: function (object) {
+        var $that = this;
         this.vars.objLoader.load( object, function ( gltf ) {
             var model = gltf.scene;
             var wireframe = false;
+            model.position.set(750, -5, 300)
+            console.log(model);
             model.traverse (i => {
                 if (i.isMesh) {
-                    switch (i.name) {
-                        case 'Speaker2':
-                            i.material = new myObjectTexture('#0082F0', wireframe);
-                            break;
-                    }
+                    i.material = new $that.objTexture('#0082F0', wireframe);
+                    // switch (i.name) {
+                    //     case 'Speaker2':
+                    //         i.material = new myObjectTexture('#0082F0', wireframe);
+                    //         break;
+                    // }
                     // threeObj.push(i);
                 }
             });
-            threeObj.push(model);
-            scene.add( model);
-
+            $that.vars.threeObj.push(model);
+            $that.vars.scene.add( model);
+            console.log($that.vars.threeObj[0]);
         }, undefined, function ( error ) {
 
             console.error( error );
@@ -157,9 +162,10 @@ var tourExperience = {
     init: function () {
         this.renderInit();
         this.cameraInit();
-        this.lightPoint(0xffffff, 1, 1000, 0, 1, 1, 100);
+        this.lightPoint(0xffffff, 1, 1000, 0, 1, 1, 1);
         this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(1000, 1000, 'blue', false);
+        this.ojbLoader(this.vars.obj);
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
