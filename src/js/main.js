@@ -31,7 +31,7 @@ var tourExperience = {
         this.vars.scene.add(sceneWrapp);
     },
     objTexture: function (color, wireframe) {
-        return new THREE.MeshPhongMaterial({color: color, metalness: 0, side: THREE.DoubleSide, wireframe: wireframe })
+        return new THREE.MeshPhongMaterial({color: color, reflectivity: 100, side: THREE.DoubleSide, wireframe: wireframe })
     },
     ojbLoader: function (object) {
         var $that = this;
@@ -40,30 +40,153 @@ var tourExperience = {
             model.castShadow = true;
             var wireframe = false;
             model.position.set(2250, -5, 900)
-            console.log(model);
             model.traverse (i => {
                 if (i.isMesh) {
                     i.scale.set(3,3,3)
                     i.material = new $that.objTexture('#0082F0', wireframe);
-                    if (i.name === 'Sweep' ) {
-                        console.log(i);
-                        i.material = new $that.objTexture('white', wireframe);
-                    }
-                    if (i.name === 'Street1' ) {
-                        console.log(i);
-                        i.material = new $that.objTexture('white', wireframe);
-                    }
-                    // switch (i.name) {
-                    //     case 'Speaker2':
-                    //         i.material = new myObjectTexture('#0082F0', wireframe);
-                    //         break;
-                    // }
-                    // threeObj.push(i);
                 }
             });
             $that.vars.threeObj.push(model);
             $that.vars.scene.add( model);
-            console.log($that.vars.threeObj[0]);
+            $that.vars.threeObj[0].children.sort((a, b) => a.name.localeCompare(b.name))
+            $that.vars.threeObj[0].children.forEach( ( el,index ) => {
+                //windows
+                if ( index >= 253 ) {
+                    el.material.color.set('white');
+                }
+                // 3 floor steps
+                if ( index >= 62 && index <= 65  ) {
+                    el.material.color.set('black');
+                }
+                // circles on antenas
+                if ( index <= 61 ) {
+                    el.material.color.set('blue');
+                }
+                if ( index >= 66 && index <= 71 ) {
+                    el.material.color.set('blue');
+                }
+                // radio dish
+                if ( index >= 72 && index <= 73 ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 74 && index <= 74 ) {
+                    el.material.color.set('silver');
+                }
+                // mid of mid building
+                if ( index >= 75 && index <= 75 ) {
+                    el.material.color.set('black');
+                }
+                // radio dish
+                if ( index >= 76 && index <= 76 ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 77 && index <= 77 ) {
+                    el.material.color.set('silver');
+                }
+                // building top
+                if ( index >= 78 && index <= 78 ) {
+                    el.material.color.set('silver');
+                }
+                // radio dish
+                if ( index >= 79 && index <= 79 ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 80  && index <= 80  ) {
+                    el.material.color.set('silver');
+                }
+                // radio dish
+                if ( index >= 81  && index <= 81  ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 82  && index <= 82  ) {
+                    el.material.color.set('silver');
+                }
+                // radio dish
+                if ( index >= 83  && index <= 84  ) {
+                    el.material.color.set('blue');
+                }
+                // mid of skyscrapper
+                if ( index >= 85  && index <= 85  ) {
+                    el.material.color.set('black');
+                }
+                // radio dish
+                if ( index >= 86  && index <= 86  ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 87  && index <= 87  ) {
+                    el.material.color.set('silver');
+                }
+                // building top
+                if ( index >= 88  && index <= 88  ) {
+                    el.material.color.set('silver');
+                }
+                // radio dish
+                if ( index >= 89  && index <= 92  ) {
+                    el.material.color.set('blue');
+                }
+                // antena base
+                if ( index >= 93  && index <= 93  ) {
+                    el.material.color.set('silver');
+                }
+                // building top
+                if ( index >= 94  && index <= 94  ) {
+                    el.material.color.set('silver');
+                }
+                // radio dish
+                if ( index >= 95  && index <= 95  ) {
+                    el.material.color.set('blue');
+                }
+                // building bottom
+                if ( index >= 96  && index <= 96  ) {
+                    el.material.color.set('silver');
+                }
+                // antena base
+                if ( index >= 97  && index <= 97  ) {
+                    el.material.color.set('silver');
+                }
+                // building base
+                if ( index >= 98  && index <= 99  ) {
+                    el.material.color.set('silver');
+                }
+                // antena base
+                if ( index >= 100  && index <= 101  ) {
+                    el.material.color.set('silver');
+                }
+                // skyscrapper wrapper
+                if ( index >= 102  && index <= 102  ) {
+                    el.material.color.set('silver');
+                }
+                //  building bottom + building top
+                if ( index >= 103  && index <= 105  ) {
+                    el.material.color.set('silver');
+                }
+                //  skyscrapper window wrapp
+                if ( index >= 106  && index <= 106  ) {
+                    el.material.color.set('silver');
+                }
+                //  building top
+                if ( index >= 107  && index <= 107  ) {
+                    el.material.color.set('silver');
+                }
+
+            //     if ( index >= 182 & index <= 211 ) {
+            //         el.material.color.set('white');
+            //     }
+            //     if ( index >= 182 & index <= 211 ) {
+            //         el.material.color.set('white');
+            //     }
+            //     //road
+            //     if ( index <= 1 ) {
+            //         el.material.color.set('silver');
+            //     }
+
+            });
+            console.log($that.vars.threeObj[0].children);
         }, undefined, function ( error ) {
 
             console.error( error );
@@ -172,13 +295,15 @@ var tourExperience = {
     init: function () {
         this.renderInit();
         this.cameraInit();
-        this.lightPoint(0xffffff, 1, 1000, 0, 1, 10, 1);
+        this.lightPoint(0xffffff, 1, 1000, 0, 1, 100, 1);
         this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(2000, 2000, 'blue', false);
         this.ojbLoader(this.vars.obj);
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
+        console.log(this.vars.threeObj[0]);
+
     }
 }
 
