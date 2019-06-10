@@ -12,7 +12,7 @@ var tourExperience = {
         objLoader: new THREE.GLTFLoader(),
         fontLoader: new THREE.FontLoader(),
         textGroup: new THREE.Group(),
-        camera: new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000),
+        camera: new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000),
         renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
         fps: new Stats(),
         clock: new THREE.Clock,
@@ -37,12 +37,22 @@ var tourExperience = {
         var $that = this;
         this.vars.objLoader.load( object, function ( gltf ) {
             var model = gltf.scene;
+            model.castShadow = true;
             var wireframe = false;
-            model.position.set(750, -5, 300)
+            model.position.set(2250, -5, 900)
             console.log(model);
             model.traverse (i => {
                 if (i.isMesh) {
+                    i.scale.set(3,3,3)
                     i.material = new $that.objTexture('#0082F0', wireframe);
+                    if (i.name === 'Sweep' ) {
+                        console.log(i);
+                        i.material = new $that.objTexture('white', wireframe);
+                    }
+                    if (i.name === 'Street1' ) {
+                        console.log(i);
+                        i.material = new $that.objTexture('white', wireframe);
+                    }
                     // switch (i.name) {
                     //     case 'Speaker2':
                     //         i.material = new myObjectTexture('#0082F0', wireframe);
@@ -94,8 +104,8 @@ var tourExperience = {
     },
     onMouseClick: function (e) {
         var raycaster = new THREE.Raycaster();
-        raycaster.far = 170;
-        raycaster.near = 135;
+        // raycaster.far = 170;
+        // raycaster.near = 135;
         var mouse = new THREE.Vector2();
 
         e.preventDefault();
@@ -107,7 +117,7 @@ var tourExperience = {
 
         var intersects = raycaster.intersectObjects( tourExperience.vars.scene.children );
         if ( intersects.length > 0 ) {
-            tourExperience.vars.thundeTime = 20;
+            console.log(intersects)
         }
     },
     onWindowResize: function () {
@@ -117,7 +127,7 @@ var tourExperience = {
     },
     cameraInit: function () {
         this.vars.camera.position.z = 100;
-        this.vars.camera.position.set(0, 80, -140);
+        this.vars.camera.position.set(300, 400, -640);
 
         var controls = new OrbitControls( this.vars.camera );
         var center = new THREE.Vector3();
@@ -127,7 +137,7 @@ var tourExperience = {
         // controls.autoRotate = true;
         controls.autoRotateSpeed = 1;
         controls.maxPolarAngle = Math.PI/2;
-        controls.maxDistance = 300;
+        controls.maxDistance = 1000;
         controls.enablePan = false;
         center.z = -500;
 
@@ -162,9 +172,9 @@ var tourExperience = {
     init: function () {
         this.renderInit();
         this.cameraInit();
-        this.lightPoint(0xffffff, 1, 1000, 0, 1, 1, 1);
+        this.lightPoint(0xffffff, 1, 1000, 0, 1, 10, 1);
         this.lightHemisphere('silver', 'black', 1);
-        this.sceneFloor(1000, 1000, 'blue', false);
+        this.sceneFloor(2000, 2000, 'blue', false);
         this.ojbLoader(this.vars.obj);
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
