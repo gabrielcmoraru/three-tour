@@ -173,6 +173,54 @@ var tourExperience = {
                 if ( index >= 107  && index <= 107  ) {
                     el.material.color.set('silver');
                 }
+                //  skyscrapper top bottom and back
+                if ( index >= 108  && index <= 110  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena pole
+                if ( index >= 111  && index <= 143  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena base
+                if ( index >= 144  && index <= 144  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena pole top
+                if ( index >= 145  && index <= 146  ) {
+                    el.material.color.set('white');
+                }
+                //  antena base
+                if ( index >= 147  && index <= 148  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena pole top
+                if ( index >= 149  && index <= 149  ) {
+                    el.material.color.set('white');
+                }
+                //  antena base
+                if ( index >= 150  && index <= 150  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena pole top
+                if ( index >= 151  && index <= 155  ) {
+                    el.material.color.set('white');
+                }
+                //  antena base
+                if ( index >= 156  && index <= 156  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena pole top
+                if ( index >= 157  && index <= 157  ) {
+                    el.material.color.set('white');
+                }
+                //  antena base
+                if ( index >= 158  && index <= 158  ) {
+                    el.material.color.set('silver');
+                }
+                //  antena second mid circle
+                if ( index >= 159  && index <= 173  ) {
+                    el.material.color.set('white');
+                }
 
             //     if ( index >= 182 & index <= 211 ) {
             //         el.material.color.set('white');
