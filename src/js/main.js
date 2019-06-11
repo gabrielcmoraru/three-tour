@@ -18,7 +18,11 @@ var tourExperience = {
         clock: new THREE.Clock,
         obj: 'src/obj/building.gltf',
         textFont: 'src/fonts/criteria-thin.json',
-        text: 'text'
+        text: 'text',
+        colorWhite: 'white',
+        colorBlack: 'black',
+        colorSilver: 'silver',
+        colorBlue: 'blue'
     },
     sceneFloor: function (width, height, color, wireframe) {
         var geometry = new THREE.PlaneGeometry(width, height, 50, 50);
@@ -52,189 +56,243 @@ var tourExperience = {
             $that.vars.threeObj[0].children.forEach( ( el,index ) => {
                 //windows
                 if ( index >= 253 ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
                 }
                 // 3 floor steps
                 if ( index >= 62 && index <= 65  ) {
-                    el.material.color.set('black');
+                    el.material.color.set($that.vars.colorBlack);
                 }
                 // circles on antenas
                 if ( index <= 61 ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 if ( index >= 66 && index <= 71 ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // radio dish
                 if ( index >= 72 && index <= 73 ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 74 && index <= 74 ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // mid of mid building
                 if ( index >= 75 && index <= 75 ) {
-                    el.material.color.set('black');
+                    el.material.color.set($that.vars.colorBlack);
                 }
                 // radio dish
                 if ( index >= 76 && index <= 76 ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 77 && index <= 77 ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // building top
                 if ( index >= 78 && index <= 78 ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // radio dish
                 if ( index >= 79 && index <= 79 ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 80  && index <= 80  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // radio dish
                 if ( index >= 81  && index <= 81  ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 82  && index <= 82  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // radio dish
                 if ( index >= 83  && index <= 84  ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // mid of skyscrapper
                 if ( index >= 85  && index <= 85  ) {
-                    el.material.color.set('black');
+                    el.material.color.set($that.vars.colorBlack);
                 }
                 // radio dish
                 if ( index >= 86  && index <= 86  ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 87  && index <= 87  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // building top
                 if ( index >= 88  && index <= 88  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // radio dish
                 if ( index >= 89  && index <= 92  ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // antena base
                 if ( index >= 93  && index <= 93  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // building top
                 if ( index >= 94  && index <= 94  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // radio dish
                 if ( index >= 95  && index <= 95  ) {
-                    el.material.color.set('blue');
+                    el.material.color.set($that.vars.colorBlue);
                 }
                 // building bottom
                 if ( index >= 96  && index <= 96  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // antena base
                 if ( index >= 97  && index <= 97  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // building base
                 if ( index >= 98  && index <= 99  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // antena base
                 if ( index >= 100  && index <= 101  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 // skyscrapper wrapper
                 if ( index >= 102  && index <= 102  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  building bottom + building top
                 if ( index >= 103  && index <= 105  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  skyscrapper window wrapp
                 if ( index >= 106  && index <= 106  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  building top
                 if ( index >= 107  && index <= 107  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  skyscrapper top bottom and back
                 if ( index >= 108  && index <= 110  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena pole
                 if ( index >= 111  && index <= 143  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena base
                 if ( index >= 144  && index <= 144  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena pole top
                 if ( index >= 145  && index <= 146  ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
                 }
                 //  antena base
                 if ( index >= 147  && index <= 148  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena pole top
                 if ( index >= 149  && index <= 149  ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
                 }
                 //  antena base
                 if ( index >= 150  && index <= 150  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena pole top
                 if ( index >= 151  && index <= 155  ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
                 }
                 //  antena base
                 if ( index >= 156  && index <= 156  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena pole top
                 if ( index >= 157  && index <= 157  ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
                 }
                 //  antena base
                 if ( index >= 158  && index <= 158  ) {
-                    el.material.color.set('silver');
+                    el.material.color.set($that.vars.colorSilver);
                 }
                 //  antena second mid circle
                 if ( index >= 159  && index <= 173  ) {
-                    el.material.color.set('white');
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  antena pole top
+                if ( index >= 174  && index <= 177 ) {
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  radio dish pole clip
+                if ( index >= 178  && index <= 178 ) {
+                    el.material.color.set($that.vars.colorBlue);
+                }
+                //  antena pole top
+                if ( index >= 179  && index <= 203 ) {
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  radio dish pole clip
+                if ( index >= 204  && index <= 208 ) {
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  floor step side
+                if ( index >= 209  && index <= 209 ) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  radio dish pole clip
+                if ( index >= 210  && index <= 221) {
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  floor step side
+                if ( index >= 222  && index <= 222) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  radio dish pole clip
+                if ( index >= 223  && index <= 230) {
+                    el.material.color.set($that.vars.colorWhite);
+                }
+                //  antena mid support outline
+                if ( index >= 231  && index <= 239) {
+                    el.material.color.set($that.vars.colorBlue);
+                }
+                //  floor step side
+                if ( index >= 240  && index <= 240) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  floor steps corners
+                if ( index >= 241  && index <= 243) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  cinema screen
+                if ( index >= 244  && index <= 244) {
+                    el.material.color.set('red');
+                }
+                //  main road
+                if ( index >= 245  && index <= 245) {
+                    el.material.color.set($that.vars.colorSilver);
+                }
+                //  main road border
+                if ( index >= 246  && index <= 246) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  3 small buildings
+                if ( index >= 247  && index <= 249) {
+                    el.material.color.set($that.vars.colorBlack);
+                }
+                //  3 big antena bases
+                if ( index >= 250  && index <= 252) {
+                    el.material.color.set($that.vars.colorBlue);
                 }
 
-            //     if ( index >= 182 & index <= 211 ) {
-            //         el.material.color.set('white');
-            //     }
-            //     if ( index >= 182 & index <= 211 ) {
-            //         el.material.color.set('white');
-            //     }
-            //     //road
-            //     if ( index <= 1 ) {
-            //         el.material.color.set('silver');
-            //     }
 
             });
-            console.log($that.vars.threeObj[0].children);
+            console.table($that.vars.threeObj[0].children);
         }, undefined, function ( error ) {
 
             console.error( error );
