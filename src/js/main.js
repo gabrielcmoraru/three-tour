@@ -8,6 +8,7 @@ var tourExperience = {
         threeObj: [],
         threeTxt: [],
         threeOrbit: [],
+        clickSelection: [],
         scene: new THREE.Scene(),
         objLoader: new THREE.GLTFLoader(),
         fontLoader: new THREE.FontLoader(),
@@ -331,83 +332,42 @@ var tourExperience = {
         this.vars.threeTxt.push(this.vars.textGroup);
     },
     onMouseClick: function (e) {
+        var mouse = new THREE.Vector2();
+        var raycaster = new THREE.Raycaster();
+        mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+        raycaster.setFromCamera( mouse, tourExperience.vars.camera );
 
-        const selection = [];
+        var intersects = raycaster.intersectObjects( tourExperience.vars.threeObj[0].children );
 
-        let isDragging = false;
-        const mouse = new THREE.Vector2();
-        const raycaster = new THREE.Raycaster();
+        var mesh = intersects[ 0 ].object;
 
-        document.addEventListener('mousedown', () => {
-          isDragging = false;
-        }, false );
+        tourExperience.vars.clickSelection.push( mesh );
+        mesh.material = new THREE.MeshStandardMaterial( {
+            color: 0xff4444,
+            flatShading: true,
+        });
 
-        document.addEventListener('mousemove', () => {
-          isDragging = true;
-        }, false );
-
-        window.addEventListener('mouseup', ( event ) => {
-
-          if ( isDragging ) {
-            isDragging = false;
-            return;
-          }
-
-          isDragging = false;
-
-          mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-          mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-          raycaster.setFromCamera( mouse, tourExperience.vars.camera );
-
-          const intersects = raycaster.intersectObjects( tourExperience.vars.threeObj[0].children );
-
-          if ( intersects.length > 0 ) {
-
-            const mesh = intersects[ 0 ].object;
-            console.log(mesh)
-            if ( selection.includes( mesh ) ) {
-
-                mesh.material = new THREE.MeshStandardMaterial( {
-                color: 0xff4444,
-                flatShading: true,
-                });
-
-              selection.splice( selection.indexOf( mesh ), 1 );
-            } else {
-
-                selection.push( mesh );
-                mesh.material = new THREE.MeshStandardMaterial( {
-                color: 0xff4444,
-                flatShading: true,
-                });
-
-            }
-
-            if( selection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera, tourExperience.vars.controls, selection );
-
-          }
-
-
-
-        }, false );
+        if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera, tourExperience.vars.controls);
     },
-    zoomCameraToSelection: function( camera, controls, selection, fitRatio ) {
-        const box = new THREE.Box3();
-        fitRatio = 1.2;
-        box.expandByObject( selection[0] );
-        console.log(selection)
-        console.log(box)
-        // for( const object of selection ) box.expandByObject( object );
+    zoomCameraToSelection: function( camera, fitRatio ) {
+        var box = new THREE.Box3();
+        fitRatio = 1.26;
+        tourExperience.vars.clickSelection.forEach( obj => {
+            box.expandByObject( obj );
+            console.log(obj)
+        });
+        // for( let object of selection ) box.expandByObject( object );
 
-        const size = box.getSize( new THREE.Vector3() );
-        const center = box.getCenter( new THREE.Vector3() );
+        var size = box.getSize( new THREE.Vector3() );
+        var center = box.getCenter( new THREE.Vector3() );
 
-        const maxSize = Math.max( size.x, size.y, size.z );
-        const fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
-        const fitWidthDistance = fitHeightDistance / camera.aspect;
-        const distance = fitRatio * Math.max( fitHeightDistance, fitWidthDistance );
+        var maxSize = Math.max( size.x, size.y, size.z );
+        var fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
+        var fitWidthDistance = fitHeightDistance / camera.aspect;
+        var distance = fitRatio * Math.max( fitHeightDistance, fitWidthDistance );
 
-        const direction = tourExperience.vars.threeOrbit[0].target.clone()
+        var direction = tourExperience.vars.threeOrbit[0].target.clone()
             .sub( tourExperience.vars.camera.position )
             .normalize()
             .multiplyScalar( distance );
@@ -487,6 +447,8 @@ var tourExperience = {
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
+        var timeline = new TweenLite({});
+        console.log(timeline)
     }
 }
 
