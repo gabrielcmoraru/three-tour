@@ -17,6 +17,7 @@ var tourExperience = {
         renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
         fps: new Stats(),
         clock: new THREE.Clock,
+        zoomFitRatio: 1.26,
         obj: 'src/obj/building.gltf',
         textFont: 'src/fonts/criteria-thin.json',
         text: 'text',
@@ -339,25 +340,28 @@ var tourExperience = {
         raycaster.setFromCamera( mouse, tourExperience.vars.camera );
 
         var intersects = raycaster.intersectObjects( tourExperience.vars.threeObj[0].children );
-
+        var center = new THREE.Vector3(0, 0, 0);
         var mesh = intersects[ 0 ].object;
-
-        tourExperience.vars.clickSelection.push( mesh );
-        mesh.material = new THREE.MeshStandardMaterial( {
-            color: 0xff4444,
-            flatShading: true,
-        });
-
-        if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera, tourExperience.vars.controls);
+        if (tourExperience.vars.clickSelection.length > 0 ) {
+            tourExperience.vars.clickSelection.forEach(mesh => {
+                mesh.material.wireframe = false;
+            });
+            tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
+            tourExperience.vars.clickSelection = [];
+        } else {
+            tourExperience.vars.clickSelection.push( mesh );
+            tourExperience.vars.clickSelection.forEach(mesh => {
+                mesh.material.wireframe = true;
+            })
+        }
+        if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera);
     },
-    zoomCameraToSelection: function( camera, fitRatio ) {
+    zoomCameraToSelection: function( camera ) {
         var box = new THREE.Box3();
-        fitRatio = 1.26;
         tourExperience.vars.clickSelection.forEach( obj => {
             box.expandByObject( obj );
-            console.log(obj)
         });
-        // for( let object of selection ) box.expandByObject( object );
+        // console.log(tourExperience.vars.clickSelection)
 
         var size = box.getSize( new THREE.Vector3() );
         var center = box.getCenter( new THREE.Vector3() );
@@ -365,23 +369,33 @@ var tourExperience = {
         var maxSize = Math.max( size.x, size.y, size.z );
         var fitHeightDistance = maxSize / ( 2 * Math.atan( Math.PI * camera.fov / 360 ) );
         var fitWidthDistance = fitHeightDistance / camera.aspect;
-        var distance = fitRatio * Math.max( fitHeightDistance, fitWidthDistance );
+        var distance = tourExperience.vars.zoomFitRatio * Math.max( fitHeightDistance, fitWidthDistance );
 
         var direction = tourExperience.vars.threeOrbit[0].target.clone()
-            .sub( tourExperience.vars.camera.position )
-            .normalize()
-            .multiplyScalar( distance );
+        direction.sub( camera.position );
+        direction.normalize();
+        direction.multiplyScalar( distance );
 
         tourExperience.vars.threeOrbit[0].maxDistance = distance * 10;
-        tourExperience.vars.threeOrbit[0].target.copy( center );
 
-        tourExperience.vars.camera.near = distance / 100;
-        tourExperience.vars.camera.far = distance * 100;
-        tourExperience.vars.camera.updateProjectionMatrix();
+        camera.near = distance / 500;
+        camera.far = distance * 500;
+        var targetX = tourExperience.vars.threeOrbit[0].target.x - direction.x;
+        var targetY = tourExperience.vars.threeOrbit[0].target.y - direction.y;
+        var targetZ = tourExperience.vars.threeOrbit[0].target.z - direction.z;
 
-        tourExperience.vars.camera.position.copy( tourExperience.vars.threeOrbit[0].target ).sub(direction);
-
-        tourExperience.vars.threeOrbit[0].update();
+        this.cameraAnimateTo(3, targetX+this.minMax(30, 60) , targetY+300, targetZ, center);
+    },
+    cameraAnimateTo: function (tt, posX, posY, posZ, lookAt) {
+        TweenMax.to(tourExperience.vars.camera.position, tt, {onStart: () => {
+            tourExperience.vars.threeOrbit[0].enabled = false;
+        },  ease:  Expo.easeOut, x:posX, y:posY, z:posZ, onUpdate: () => {
+            tourExperience.vars.threeOrbit[0].update();
+            tourExperience.vars.camera.updateProjectionMatrix();
+            tourExperience.vars.threeOrbit[0].target.copy( lookAt );
+        }, onComplete: () => {
+            tourExperience.vars.threeOrbit[0].enabled = true;
+        }});
     },
     onWindowResize: function () {
         tourExperience.vars.camera.aspect = window.innerWidth / window.innerHeight;
@@ -447,8 +461,6 @@ var tourExperience = {
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
-        var timeline = new TweenLite({});
-        console.log(timeline)
     }
 }
 
