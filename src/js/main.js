@@ -31,21 +31,24 @@ var tourExperience = {
         text: 'text',
         colorWhite: 'white',
         colorBlack: 'black',
-        colorSilver: 'silver',
-        colorBlue: 'blue'
+        colorSilver: '#93A0AA',
+        colorBlue: '#2F70D3'
     },
     sceneFloor: function (width, height, color, wireframe) {
         var geometry = new THREE.PlaneGeometry(width, height, 50, 50);
-        var material = new THREE.MeshPhongMaterial({color: color, shininess: 100, side: THREE.DoubleSide, wireframe: wireframe });
+        var material = new THREE.MeshPhysicalMaterial({color: color, shininess: 100, side: THREE.DoubleSide, wireframe: wireframe });
 
         var sceneWrapp = new THREE.Mesh(geometry, material);
         sceneWrapp.rotation.x = Math.PI / 2;
         sceneWrapp.position.y = -5;
         this.vars.scene.add(sceneWrapp);
+        //fake squares
+        var helper = new THREE.GridHelper(width, 15, 'blue', 'blue');
+        this.vars.scene.add(helper);
 
     },
     objTexture: function (color, wireframe) {
-        return new THREE.MeshPhongMaterial({color: color, reflectivity: 100, side: THREE.DoubleSide, wireframe: wireframe })
+        return new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, wireframe: wireframe, reflectivity:0.25 })
     },
     ojbLoader: function (object) {
         var $that = this;
@@ -381,8 +384,8 @@ var tourExperience = {
 
         tourExperience.vars.threeOrbit[0].maxDistance = distance * 3;
 
-        camera.near = distance / 10;
-        camera.far = distance * 10;
+        camera.near = distance / 100;
+        camera.far = distance * 100;
 
         var targetX = tourExperience.vars.threeOrbit[0].target.x - direction.x;
         var targetY = tourExperience.vars.threeOrbit[0].target.y - direction.y;
@@ -475,9 +478,9 @@ var tourExperience = {
     init: function () {
         this.renderInit();
         this.cameraInit();
-        this.lightPoint(0xffffff, 1, 1000, 0, 1, 600, 1);
-        this.lightPoint(0xffffff, 1, 1000, 0, 50, 600, -600);
-        this.lightPoint(0xffffff, 1, 1000, 0, 10, 600, 600);
+        this.lightPoint(0xffffff, 1, 1000, 0, 600, 600, 1);
+        this.lightPoint(0xffffff, 1, 1000, 0, 1, 600, -600);
+        this.lightPoint(0xffffff, 1, 1000, 0, -600, 600, 1);
         // this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(1500, 1500, 'black', false);
         this.ojbLoader(this.vars.obj);
