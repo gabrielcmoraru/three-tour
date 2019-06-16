@@ -41,6 +41,7 @@ var tourExperience = {
         sceneWrapp.rotation.x = Math.PI / 2;
         sceneWrapp.position.y = -5;
         this.vars.scene.add(sceneWrapp);
+
     },
     objTexture: function (color, wireframe) {
         return new THREE.MeshPhongMaterial({color: color, reflectivity: 100, side: THREE.DoubleSide, wireframe: wireframe })
@@ -300,7 +301,7 @@ var tourExperience = {
 
 
             });
-            console.table($that.vars.threeObj[0].children);
+            // console.table($that.vars.threeObj[0].children);
         }, undefined, function ( error ) {
 
             console.error( error );
@@ -349,18 +350,20 @@ var tourExperience = {
         var intersects = raycaster.intersectObjects( tourExperience.vars.threeObj[0].children );
         var center = new THREE.Vector3(0, 0, 0);
         var mesh = intersects[ 0 ].object;
+        var selectedObjects = [];
         if (tourExperience.vars.clickSelection.length > 0 ) {
             // tourExperience.vars.clickSelection.forEach(mesh => {
             //     mesh.material.wireframe = false;
             // });
             tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
             tourExperience.vars.clickSelection = [];
+            tourExperience.vars.outlinePass.selectedObjects = [];
         } else {
             tourExperience.vars.clickSelection.push( mesh );
             // tourExperience.vars.clickSelection.forEach(mesh => {
             //     mesh.material.wireframe = true;
             // })
-            var selectedObjects = [mesh];
+            selectedObjects.push(mesh);
             tourExperience.vars.outlinePass.selectedObjects = selectedObjects;
         }
         if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera);
@@ -393,7 +396,7 @@ var tourExperience = {
         var targetY = tourExperience.vars.threeOrbit[0].target.y - direction.y;
         var targetZ = tourExperience.vars.threeOrbit[0].target.z - direction.z;
 
-        this.cameraAnimateTo(3, targetX+this.minMax(30, 60) , targetY+300, targetZ, center);
+        this.cameraAnimateTo(2, targetX+this.minMax(30, 60) , targetY+300, targetZ, center);
     },
     cameraAnimateTo: function (tt, posX, posY, posZ, lookAt) {
         TweenMax.to(tourExperience.vars.camera.position, tt, {onStart: () => {
@@ -442,6 +445,7 @@ var tourExperience = {
     renderInit: function () {
         this.vars.renderer.setSize(window.innerWidth, window.innerHeight);
         this.vars.renderer.setPixelRatio( window.devicePixelRatio );
+        this.vars.renderer.shadowMap = true;
         this.vars.gammaFactor = 2.2;
         this.vars.gammaOutput = true;
         this.vars.physicallyCorrectLights = true;
@@ -452,9 +456,10 @@ var tourExperience = {
         var renderPass = new THREE.RenderPass( tourExperience.vars.scene, tourExperience.vars.camera );
         tourExperience.vars.composer.addPass( renderPass );
         tourExperience.vars.outlinePass = new THREE.OutlinePass( new THREE.Vector2( window.innerWidth, window.innerHeight ), tourExperience.vars.scene, tourExperience.vars.camera );
-        tourExperience.vars.outlinePass.edgeStrength = 3.0;
+        tourExperience.vars.outlinePass.visibleEdgeColor = new THREE.Color('red');
+        tourExperience.vars.outlinePass.edgeStrength = 7.0;
         tourExperience.vars.outlinePass.edgeGlow = 1.0;
-        tourExperience.vars.outlinePass.edgeThickness = 1.0;
+        tourExperience.vars.outlinePass.edgeThickness = 2.0;
         tourExperience.vars.outlinePass.pulsePeriod = 1.2;
         tourExperience.vars.outlinePass.rotate = true;
         tourExperience.vars.outlinePass.usePatternTexture = false;
@@ -477,10 +482,10 @@ var tourExperience = {
     init: function () {
         this.renderInit();
         this.cameraInit();
-        this.lightPoint(0xffffff, 1, 1000, 0, 1, 100, 1);
-        this.lightPoint(0xffffff, 0.2, 1000, 0, 500, 100, -500);
-        this.lightPoint(0xffffff, 0.2, 1000, 0, -500, 100, 500);
-        this.lightHemisphere('silver', 'black', 1);
+        this.lightPoint(0xffffff, 1, 1000, 0, 1, 600, 1);
+        this.lightPoint(0xffffff, 1, 1000, 0, 50, 600, -600);
+        this.lightPoint(0xffffff, 1, 1000, 0, 10, 600, 600);
+        // this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(2000, 2000, 'blue', false);
         this.ojbLoader(this.vars.obj);
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
