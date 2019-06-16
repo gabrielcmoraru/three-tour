@@ -22,10 +22,10 @@ var tourExperience = {
         fontLoader: new THREE.FontLoader(),
         textGroup: new THREE.Group(),
         camera: new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000),
-        renderer: new THREE.WebGLRenderer({alpha: true, antialias: true}),
+        renderer: new THREE.WebGLRenderer({alpha: false, antialias: false}),
         fps: new Stats(),
         clock: new THREE.Clock,
-        zoomFitRatio: 1.26,
+        zoomFitRatio: 1.45,
         obj: 'src/obj/building.gltf',
         textFont: 'src/fonts/criteria-thin.json',
         text: 'text',
@@ -56,7 +56,7 @@ var tourExperience = {
             model.position.set(2250, -5, 900)
             model.traverse (i => {
                 if (i.isMesh) {
-                    i.scale.set(3,3,3)
+                    i.scale.set(3,3,3);
                     i.material = new $that.objTexture('#0082F0', wireframe);
                 }
             });
@@ -330,8 +330,8 @@ var tourExperience = {
             },
         });
         sprite.position.set( posX, posY, posZ);
-        tourExperience.vars.scene.add(sprite);
         tourExperience.vars.threeTxt.push(sprite);
+        tourExperience.vars.scene.add(sprite);
     },
     onMouseClick: function (e) {
         var mouse = new THREE.Vector2();
@@ -345,24 +345,16 @@ var tourExperience = {
         var mesh = intersects[ 0 ].object;
         var selectedObjects = [];
         if (tourExperience.vars.clickSelection.length > 0 ) {
-            // tourExperience.vars.clickSelection.forEach(mesh => {
-            //     mesh.material.wireframe = false;
-            // });
             tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
+            tourExperience.vars.threeOrbit[0].maxDistance = 600;
             tourExperience.vars.clickSelection = [];
             tourExperience.vars.outlinePass.selectedObjects = [];
             tourExperience.vars.threeTxt.forEach(text => {
                 var textDispose = tourExperience.vars.scene.getObjectByProperty( 'uuid', text.uuid)
-                textDispose.geometry.dispose();
-                textDispose.material.dispose();
                 tourExperience.vars.scene.remove(textDispose);
             });
-            console.log(tourExperience.vars.threeTxt[0]);
         } else {
             tourExperience.vars.clickSelection.push( mesh );
-            // tourExperience.vars.clickSelection.forEach(mesh => {
-            //     mesh.material.wireframe = true;
-            // })
             selectedObjects.push(mesh);
             tourExperience.vars.outlinePass.selectedObjects = selectedObjects;
         }
@@ -387,10 +379,11 @@ var tourExperience = {
         direction.normalize();
         direction.multiplyScalar( distance );
 
-        tourExperience.vars.threeOrbit[0].maxDistance = distance * 10;
+        tourExperience.vars.threeOrbit[0].maxDistance = distance * 3;
 
-        camera.near = distance / 500;
-        camera.far = distance * 500;
+        camera.near = distance / 10;
+        camera.far = distance * 10;
+
         var targetX = tourExperience.vars.threeOrbit[0].target.x - direction.x;
         var targetY = tourExperience.vars.threeOrbit[0].target.y - direction.y;
         var targetZ = tourExperience.vars.threeOrbit[0].target.z - direction.z;
@@ -405,9 +398,7 @@ var tourExperience = {
             tourExperience.vars.camera.updateProjectionMatrix();
         }, onComplete: () => {
             tourExperience.vars.threeOrbit[0].enabled = true;
-            // console.log(textPos)
-            // (text, textSize, color, posX, posY, posZ)
-            tourExperience.text2d('test test', 20, 'white', textPos.max.x, textPos.max.y + 100, textPos.max.z - 50);
+            tourExperience.text2d(tourExperience.vars.clickSelection[0].name, 30, 'red', textPos.max.x, textPos.max.y + 100, textPos.max.z - 50);
         }});
         TweenMax.to(tourExperience.vars.threeOrbit[0].target, tt, {ease:  Sine.easeIn, x:lookAt.x, y:lookAt.y, z:lookAt.z});
     },
@@ -428,7 +419,7 @@ var tourExperience = {
         // controls.autoRotate = true;
         controls.autoRotateSpeed = 1;
         controls.maxPolarAngle = Math.PI/2;
-        controls.maxDistance = 1000;
+        controls.maxDistance = 600;
         controls.enablePan = false;
         center.z = -500;
 
@@ -488,7 +479,7 @@ var tourExperience = {
         this.lightPoint(0xffffff, 1, 1000, 0, 50, 600, -600);
         this.lightPoint(0xffffff, 1, 1000, 0, 10, 600, 600);
         // this.lightHemisphere('silver', 'black', 1);
-        this.sceneFloor(2000, 2000, 'blue', false);
+        this.sceneFloor(1500, 1500, 'black', false);
         this.ojbLoader(this.vars.obj);
         this.evenListeners();
         this.showFPS();
