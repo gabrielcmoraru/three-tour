@@ -1,6 +1,11 @@
 var THREE = window.THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var Stats = require('stats-js');
+require("../js/CopyShader");
+require("../js/EffectComposer");
+require("../js/RenderPass");
+require("../js/OutlinePass");
+require("../js/ShaderPass");
 require('three/examples/js/loaders/GLTFLoader');
 
 var tourExperience = {
@@ -9,6 +14,8 @@ var tourExperience = {
         threeTxt: [],
         threeOrbit: [],
         clickSelection: [],
+        composer: '',
+        outlinePass: '',
         scene: new THREE.Scene(),
         objLoader: new THREE.GLTFLoader(),
         fontLoader: new THREE.FontLoader(),
@@ -343,16 +350,18 @@ var tourExperience = {
         var center = new THREE.Vector3(0, 0, 0);
         var mesh = intersects[ 0 ].object;
         if (tourExperience.vars.clickSelection.length > 0 ) {
-            tourExperience.vars.clickSelection.forEach(mesh => {
-                mesh.material.wireframe = false;
-            });
+            // tourExperience.vars.clickSelection.forEach(mesh => {
+            //     mesh.material.wireframe = false;
+            // });
             tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
             tourExperience.vars.clickSelection = [];
         } else {
             tourExperience.vars.clickSelection.push( mesh );
-            tourExperience.vars.clickSelection.forEach(mesh => {
-                mesh.material.wireframe = true;
-            })
+            // tourExperience.vars.clickSelection.forEach(mesh => {
+            //     mesh.material.wireframe = true;
+            // })
+            var selectedObjects = [mesh];
+            tourExperience.vars.outlinePass.selectedObjects = selectedObjects;
         }
         if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera);
     },
@@ -389,13 +398,13 @@ var tourExperience = {
     cameraAnimateTo: function (tt, posX, posY, posZ, lookAt) {
         TweenMax.to(tourExperience.vars.camera.position, tt, {onStart: () => {
             tourExperience.vars.threeOrbit[0].enabled = false;
-        },  ease:  Expo.easeOut, x:posX, y:posY, z:posZ, onUpdate: () => {
+        },  ease:  Sine.easeIn, x:posX, y:posY, z:posZ, onUpdate: () => {
             tourExperience.vars.threeOrbit[0].update();
             tourExperience.vars.camera.updateProjectionMatrix();
-            tourExperience.vars.threeOrbit[0].target.copy( lookAt );
         }, onComplete: () => {
             tourExperience.vars.threeOrbit[0].enabled = true;
         }});
+        TweenMax.to(tourExperience.vars.threeOrbit[0].target, tt, {ease:  Sine.easeIn, x:lookAt.x, y:lookAt.y, z:lookAt.z});
     },
     onWindowResize: function () {
         tourExperience.vars.camera.aspect = window.innerWidth / window.innerHeight;
@@ -438,10 +447,26 @@ var tourExperience = {
         this.vars.physicallyCorrectLights = true;
         document.body.appendChild(this.vars.renderer.domElement);
     },
+    postProcess: function () {
+        tourExperience.vars.composer = new THREE.EffectComposer( tourExperience.vars.renderer );
+        var renderPass = new THREE.RenderPass( tourExperience.vars.scene, tourExperience.vars.camera );
+        tourExperience.vars.composer.addPass( renderPass );
+        tourExperience.vars.outlinePass = new THREE.OutlinePass( new THREE.Vector2( window.innerWidth, window.innerHeight ), tourExperience.vars.scene, tourExperience.vars.camera );
+        tourExperience.vars.outlinePass.edgeStrength = 3.0;
+        tourExperience.vars.outlinePass.edgeGlow = 1.0;
+        tourExperience.vars.outlinePass.edgeThickness = 1.0;
+        tourExperience.vars.outlinePass.pulsePeriod = 1.2;
+        tourExperience.vars.outlinePass.rotate = true;
+        tourExperience.vars.outlinePass.usePatternTexture = false;
+        tourExperience.vars.composer.addPass( tourExperience.vars.outlinePass );
+    },
     mainLoop: function() {
         tourExperience.vars.fps.update();
         tourExperience.vars.threeOrbit[0].update();
-        tourExperience.vars.renderer.render(tourExperience.vars.scene, tourExperience.vars.camera);
+        //default render
+        // tourExperience.vars.renderer.render(tourExperience.vars.scene, tourExperience.vars.camera);
+        //postprocess render
+        tourExperience.vars.composer.render();
         requestAnimationFrame(tourExperience.mainLoop);
     },
     evenListeners: function () {
@@ -461,6 +486,7 @@ var tourExperience = {
         // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
+        this.postProcess();
     }
 }
 
