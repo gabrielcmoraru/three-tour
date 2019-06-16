@@ -1,6 +1,7 @@
 var THREE = window.THREE = require('three');
 var OrbitControls = require('three-orbit-controls')(THREE);
 var Stats = require('stats-js');
+require("../js/FXAAShader");
 require("../js/CopyShader");
 require("../js/EffectComposer");
 require("../js/RenderPass");
@@ -17,6 +18,7 @@ var tourExperience = {
         clickSelection: [],
         composer: '',
         outlinePass: '',
+        effectFXAA: '',
         scene: new THREE.Scene(),
         objLoader: new THREE.GLTFLoader(),
         fontLoader: new THREE.FontLoader(),
@@ -36,7 +38,7 @@ var tourExperience = {
     },
     sceneFloor: function (width, height, color, wireframe) {
         var geometry = new THREE.PlaneGeometry(width, height, 50, 50);
-        var material = new THREE.MeshPhysicalMaterial({color: color, shininess: 100, side: THREE.DoubleSide, wireframe: wireframe });
+        var material = new THREE.MeshPhysicalMaterial({color: color, side: THREE.DoubleSide, wireframe: wireframe });
 
         var sceneWrapp = new THREE.Mesh(geometry, material);
         sceneWrapp.rotation.x = Math.PI / 2;
@@ -48,7 +50,7 @@ var tourExperience = {
 
     },
     objTexture: function (color, wireframe) {
-        return new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, wireframe: wireframe, reflectivity:0.25 })
+        return new THREE.MeshStandardMaterial({color: color, side: THREE.DoubleSide, wireframe: wireframe })
     },
     ojbLoader: function (object) {
         var $that = this;
@@ -409,6 +411,7 @@ var tourExperience = {
         tourExperience.vars.camera.aspect = window.innerWidth / window.innerHeight;
         tourExperience.vars.camera.updateProjectionMatrix();
         tourExperience.vars.renderer.setSize( window.innerWidth, window.innerHeight );
+        tourExperience.vars.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
     },
     cameraInit: function () {
         this.vars.camera.position.z = 100;
@@ -460,6 +463,10 @@ var tourExperience = {
         tourExperience.vars.outlinePass.rotate = true;
         tourExperience.vars.outlinePass.usePatternTexture = false;
         tourExperience.vars.composer.addPass( tourExperience.vars.outlinePass );
+
+        tourExperience.vars.effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
+        tourExperience.vars.effectFXAA.uniforms[ 'resolution' ].value.set( 0.5 / window.innerWidth, 0.5 / window.innerHeight );
+        tourExperience.vars.composer.addPass( tourExperience.vars.effectFXAA );
     },
     mainLoop: function() {
         tourExperience.vars.fps.update();
