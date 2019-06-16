@@ -7,6 +7,7 @@ require("../js/RenderPass");
 require("../js/OutlinePass");
 require("../js/ShaderPass");
 require('three/examples/js/loaders/GLTFLoader');
+import TextSprite from 'three.textsprite';
 
 var tourExperience = {
     vars: {
@@ -315,30 +316,22 @@ var tourExperience = {
     minMax: function (min, max) {
         return Math.random() * (max - min) + min;
     },
-    fontLoad: function (textFont, textContent, size, posX, posY, posZ) {
-        var $that = this;
-        this.vars.fontLoader.load( textFont, function (font) {
-            var textGeometry = new THREE.TextGeometry( textContent, {
-                font: font,
-                size: size,
-                height: 0.5,
-                curveSegments: 0,
-                bevelEnabled: true,
-                bevelThickness: 0,
-                bevelSize: 0,
-                bevelOffset: 0,
-                bevelSegments: 0
-            });
-            var textMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff});
-            var mesh = new THREE.Mesh( textGeometry, textMaterial);
-            mesh.position.set(posX,posY,posZ);
-            mesh.name = `text-${textContent}`;
-            mesh.castShadow = true;
-            mesh.receiveShadow = false;
-            $that.vars.textGroup.add(mesh);
+    text2d: function (text, textSize, color, posX, posY, posZ) {
+        var sprite = new TextSprite({
+            material: {
+            color: color,
+            fog: true,
+            },
+            redrawInterval: 250,
+            textSize: textSize,
+            texture: {
+            fontFamily: 'Arial, Helvetica, sans-serif',
+            text: text,
+            },
         });
-        this.vars.scene.add(this.vars.textGroup);
-        this.vars.threeTxt.push(this.vars.textGroup);
+        sprite.position.set( posX, posY, posZ);
+        tourExperience.vars.scene.add(sprite);
+        tourExperience.vars.threeTxt.push(sprite);
     },
     onMouseClick: function (e) {
         var mouse = new THREE.Vector2();
@@ -358,6 +351,13 @@ var tourExperience = {
             tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
             tourExperience.vars.clickSelection = [];
             tourExperience.vars.outlinePass.selectedObjects = [];
+            tourExperience.vars.threeTxt.forEach(text => {
+                var textDispose = tourExperience.vars.scene.getObjectByProperty( 'uuid', text.uuid)
+                textDispose.geometry.dispose();
+                textDispose.material.dispose();
+                tourExperience.vars.scene.remove(textDispose);
+            });
+            console.log(tourExperience.vars.threeTxt[0]);
         } else {
             tourExperience.vars.clickSelection.push( mesh );
             // tourExperience.vars.clickSelection.forEach(mesh => {
@@ -373,7 +373,6 @@ var tourExperience = {
         tourExperience.vars.clickSelection.forEach( obj => {
             box.expandByObject( obj );
         });
-        // console.log(tourExperience.vars.clickSelection)
 
         var size = box.getSize( new THREE.Vector3() );
         var center = box.getCenter( new THREE.Vector3() );
@@ -396,9 +395,9 @@ var tourExperience = {
         var targetY = tourExperience.vars.threeOrbit[0].target.y - direction.y;
         var targetZ = tourExperience.vars.threeOrbit[0].target.z - direction.z;
 
-        this.cameraAnimateTo(2, targetX+this.minMax(30, 60) , targetY+300, targetZ, center);
+        this.cameraAnimateTo(2, targetX+this.minMax(30, 60) , targetY+300, targetZ, center, box);
     },
-    cameraAnimateTo: function (tt, posX, posY, posZ, lookAt) {
+    cameraAnimateTo: function (tt, posX, posY, posZ, lookAt, textPos) {
         TweenMax.to(tourExperience.vars.camera.position, tt, {onStart: () => {
             tourExperience.vars.threeOrbit[0].enabled = false;
         },  ease:  Sine.easeIn, x:posX, y:posY, z:posZ, onUpdate: () => {
@@ -406,6 +405,9 @@ var tourExperience = {
             tourExperience.vars.camera.updateProjectionMatrix();
         }, onComplete: () => {
             tourExperience.vars.threeOrbit[0].enabled = true;
+            // console.log(textPos)
+            // (text, textSize, color, posX, posY, posZ)
+            tourExperience.text2d('test test', 20, 'white', textPos.max.x, textPos.max.y + 100, textPos.max.z - 50);
         }});
         TweenMax.to(tourExperience.vars.threeOrbit[0].target, tt, {ease:  Sine.easeIn, x:lookAt.x, y:lookAt.y, z:lookAt.z});
     },
@@ -488,7 +490,6 @@ var tourExperience = {
         // this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(2000, 2000, 'blue', false);
         this.ojbLoader(this.vars.obj);
-        // this.fontLoad(this.vars.textFont, this.vars.text, 9, -100, 30, 3);
         this.evenListeners();
         this.showFPS();
         this.postProcess();
