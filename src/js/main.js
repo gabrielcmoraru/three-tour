@@ -19,6 +19,10 @@ var tourExperience = {
         composer: '',
         outlinePass: '',
         effectFXAA: '',
+        video: '',
+        videoImage: '',
+        videoImageContext:'',
+        videoTexture: '',
         scene: new THREE.Scene(),
         objLoader: new THREE.GLTFLoader(),
         fontLoader: new THREE.FontLoader(),
@@ -62,9 +66,7 @@ var tourExperience = {
             model.traverse (i => {
                 if (i.isMesh) {
                     i.scale.set(3,3,3);
-                    if (i.name == 'SCREEN') {
-                        $that.videoPlayer(i);
-                    }
+                    i.castShadow = true;
                     i.material = new $that.objTexture('#0082F0', wireframe);
                 }
             });
@@ -289,7 +291,8 @@ var tourExperience = {
                 }
                 //  cinema screen
                 if ( index >= 244  && index <= 244) {
-                    el.material.color.set('red');
+                    // el.material.color.set('red');
+                    el.material.color.set($that.vars.colorBlack);
                 }
                 //  main road
                 if ( index >= 245  && index <= 245) {
@@ -319,28 +322,34 @@ var tourExperience = {
     },
     videoPlayer: function (i) {
         // create the video element
-        var video = document.createElement( 'video' );
-        // video.id = 'video';
-        // video.type = ' video/ogg; codecs="theora, vorbis" ';
-        video.src = "src/video/test.mov";
-        video.load(); // must call after setting/changing source
-        video.play();
+        tourExperience.vars.video = document.createElement( 'video' );
+        tourExperience.vars.video.src = "src/video/test.mov";
+        tourExperience.vars.video.load(); // must call after setting/changing source
+        tourExperience.vars.video.play();
 
-        var videoImage = document.createElement( 'canvas' );
-        videoImage.width = 480;
-        videoImage.height = 204;
+        tourExperience.vars.videoImage = document.createElement( 'canvas' );
+        tourExperience.vars.videoImage.width = 1920;
+        tourExperience.vars.videoImage.height = 1068;
 
-        var videoTexture = new THREE.Texture( videoImage );
-        videoTexture.minFilter = THREE.LinearFilter;
-        videoTexture.magFilter = THREE.LinearFilter;
+        tourExperience.vars.videoImageContext = tourExperience.vars.videoImage.getContext( '2d' );
+        // background color if no video present
+        tourExperience.vars.videoImageContext.fillStyle = '#000000';
+        tourExperience.vars.videoImageContext.fillRect( 0, 0, tourExperience.vars.videoImage.width, tourExperience.vars.videoImage.height );
 
-        console.log(i)
-        var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
+        tourExperience.vars.videoTexture = new THREE.Texture( tourExperience.vars.videoImage  );
+        tourExperience.vars.videoTexture.minFilter = THREE.LinearFilter;
+        tourExperience.vars.videoTexture.magFilter = THREE.LinearFilter;
+
+        var movieMaterial = new THREE.MeshBasicMaterial( { map: tourExperience.vars.videoTexture, overdraw: true, side:THREE.DoubleSide } );
         // the geometry on which the movie will be displayed;
         // 		movie image will be scaled to fit these dimensions.
-        var movieGeometry = new THREE.PlaneGeometry( 240, 100, 4, 4 );
+        var movieGeometry = new THREE.PlaneGeometry( 129, 85, 4, 4 );
         var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
-        movieScreen.position.set( i.position.x+100, i.position.y+100, i.position.z+100);
+        // console.log(object)
+        // movieScreen.position.set( i.position.x+100, i.position.y+100, i.position.z+100);
+        // // // movieScreen.position.set(i.parent.position.x+10, i.parent.position.y+10 , i.parent.position.z+10);
+        movieScreen.rotation.y = Math.PI/2
+        movieScreen.position.set(-136.9, 87, 176)
         tourExperience.vars.scene.add(movieScreen);
     },
     showFPS: function () {
@@ -373,10 +382,10 @@ var tourExperience = {
         mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
         raycaster.setFromCamera( mouse, tourExperience.vars.camera );
-
         var intersects = raycaster.intersectObjects( tourExperience.vars.threeObj[0].children );
         var center = new THREE.Vector3(0, 0, 0);
         var mesh = intersects[ 0 ].object;
+        console.log(mesh)
         var selectedObjects = [];
         if (tourExperience.vars.clickSelection.length > 0 ) {
             tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
@@ -393,6 +402,7 @@ var tourExperience = {
             tourExperience.vars.outlinePass.selectedObjects = selectedObjects;
         }
         if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera);
+
     },
     zoomCameraToSelection: function( camera ) {
         var box = new THREE.Box3();
@@ -494,15 +504,24 @@ var tourExperience = {
         tourExperience.vars.composer.addPass( tourExperience.vars.outlinePass );
 
         tourExperience.vars.effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
-        tourExperience.vars.effectFXAA.uniforms[ 'resolution' ].value.set( 0.5 / window.innerWidth, 0.5 / window.innerHeight );
+        tourExperience.vars.effectFXAA.uniforms[ 'resolution' ].value.set( 0.1 / window.innerWidth, 0.1 / window.innerHeight );
         tourExperience.vars.composer.addPass( tourExperience.vars.effectFXAA );
     },
-    mainLoop: function() {
+    update: function () {
         tourExperience.vars.fps.update();
         tourExperience.vars.threeOrbit[0].update();
+    },
+    mainLoop: function() {
+        tourExperience.update();
         //default render
         // tourExperience.vars.renderer.render(tourExperience.vars.scene, tourExperience.vars.camera);
         //postprocess render
+        if ( tourExperience.vars.video.readyState === tourExperience.vars.video.HAVE_ENOUGH_DATA )
+	{
+		tourExperience.vars.videoImageContext.drawImage( tourExperience.vars.video, 0, 0 );
+		if ( tourExperience.vars.videoTexture )
+        tourExperience.vars.videoTexture.needsUpdate = true;
+	}
         tourExperience.vars.composer.render();
         requestAnimationFrame(tourExperience.mainLoop);
     },
@@ -510,6 +529,12 @@ var tourExperience = {
         var $that = this;
         window.addEventListener( 'resize', $that.onWindowResize, false );
         document.addEventListener( 'click', $that.onMouseClick, false);
+        document.addEventListener( 'keydown', function (e) {
+            console.log(e.keyCode)
+            if ( e.keyCode == 32 ) {
+                tourExperience.vars.video.play();
+            }
+         })
     },
     init: function () {
         this.renderInit();
@@ -517,6 +542,7 @@ var tourExperience = {
         this.lightPoint(0xffffff, 1, 1000, 0, 600, 600, 1);
         this.lightPoint(0xffffff, 1, 1000, 0, 1, 600, -600);
         this.lightPoint(0xffffff, 1, 1000, 0, -600, 600, 1);
+        this.videoPlayer()
         // this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(1500, 1500, 'black', false);
         this.ojbLoader(this.vars.obj);
