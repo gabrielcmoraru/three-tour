@@ -62,6 +62,9 @@ var tourExperience = {
             model.traverse (i => {
                 if (i.isMesh) {
                     i.scale.set(3,3,3);
+                    if (i.name == 'SCREEN') {
+                        $that.videoPlayer(i);
+                    }
                     i.material = new $that.objTexture('#0082F0', wireframe);
                 }
             });
@@ -313,6 +316,32 @@ var tourExperience = {
             console.error( error );
 
         });
+    },
+    videoPlayer: function (i) {
+        // create the video element
+        var video = document.createElement( 'video' );
+        // video.id = 'video';
+        // video.type = ' video/ogg; codecs="theora, vorbis" ';
+        video.src = "src/video/test.mov";
+        video.load(); // must call after setting/changing source
+        video.play();
+
+        var videoImage = document.createElement( 'canvas' );
+        videoImage.width = 480;
+        videoImage.height = 204;
+
+        var videoTexture = new THREE.Texture( videoImage );
+        videoTexture.minFilter = THREE.LinearFilter;
+        videoTexture.magFilter = THREE.LinearFilter;
+
+        console.log(i)
+        var movieMaterial = new THREE.MeshBasicMaterial( { map: videoTexture, overdraw: true, side:THREE.DoubleSide } );
+        // the geometry on which the movie will be displayed;
+        // 		movie image will be scaled to fit these dimensions.
+        var movieGeometry = new THREE.PlaneGeometry( 240, 100, 4, 4 );
+        var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
+        movieScreen.position.set( i.position.x+100, i.position.y+100, i.position.z+100);
+        tourExperience.vars.scene.add(movieScreen);
     },
     showFPS: function () {
         this.vars.fps.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
