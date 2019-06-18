@@ -323,33 +323,32 @@ var tourExperience = {
     videoPlayer: function (i) {
         // create the video element
         tourExperience.vars.video = document.createElement( 'video' );
-        tourExperience.vars.video.src = "src/video/test.mov";
+        tourExperience.vars.video.src = "src/video/surfer.mp4";
+        // tourExperience.vars.video.src = "src/video/test.mov";
         tourExperience.vars.video.load(); // must call after setting/changing source
         tourExperience.vars.video.play();
 
         tourExperience.vars.videoImage = document.createElement( 'canvas' );
-        tourExperience.vars.videoImage.width = 1920;
-        tourExperience.vars.videoImage.height = 1068;
+        tourExperience.vars.videoImage.width = 1280;
+        tourExperience.vars.videoImage.height = 720;
 
         tourExperience.vars.videoImageContext = tourExperience.vars.videoImage.getContext( '2d' );
         // background color if no video present
         tourExperience.vars.videoImageContext.fillStyle = '#000000';
         tourExperience.vars.videoImageContext.fillRect( 0, 0, tourExperience.vars.videoImage.width, tourExperience.vars.videoImage.height );
-
+        //create texture
         tourExperience.vars.videoTexture = new THREE.Texture( tourExperience.vars.videoImage  );
         tourExperience.vars.videoTexture.minFilter = THREE.LinearFilter;
         tourExperience.vars.videoTexture.magFilter = THREE.LinearFilter;
 
         var movieMaterial = new THREE.MeshBasicMaterial( { map: tourExperience.vars.videoTexture, overdraw: true, side:THREE.DoubleSide } );
         // the geometry on which the movie will be displayed;
-        // 		movie image will be scaled to fit these dimensions.
-        var movieGeometry = new THREE.PlaneGeometry( 129, 85, 4, 4 );
+        // movie image will be scaled to fit these dimensions.
+        var movieGeometry = new THREE.PlaneGeometry( 124, 69, 20, 20 );
         var movieScreen = new THREE.Mesh( movieGeometry, movieMaterial );
-        // console.log(object)
-        // movieScreen.position.set( i.position.x+100, i.position.y+100, i.position.z+100);
-        // // // movieScreen.position.set(i.parent.position.x+10, i.parent.position.y+10 , i.parent.position.z+10);
+        // antimirror
         movieScreen.rotation.y = Math.PI/2
-        movieScreen.position.set(-136.9, 87, 176)
+        movieScreen.position.set(-134, 84, 176)
         tourExperience.vars.scene.add(movieScreen);
     },
     showFPS: function () {
@@ -388,7 +387,8 @@ var tourExperience = {
         console.log(mesh)
         var selectedObjects = [];
         if (tourExperience.vars.clickSelection.length > 0 ) {
-            tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
+            //camera reset
+            // tourExperience.cameraAnimateTo(2, tourExperience.minMax(300,400), tourExperience.minMax(300,550), -tourExperience.minMax(500,800), center);
             tourExperience.vars.threeOrbit[0].maxDistance = 600;
             tourExperience.vars.clickSelection = [];
             tourExperience.vars.outlinePass.selectedObjects = [];
@@ -401,6 +401,12 @@ var tourExperience = {
             selectedObjects.push(mesh);
             tourExperience.vars.outlinePass.selectedObjects = selectedObjects;
         }
+
+        if (mesh.name == 'SCREEN') {
+            tourExperience.vars.video.play();
+            // tourExperience.vars.video.loop();
+        }
+
         if( tourExperience.vars.clickSelection.length > 0 ) tourExperience.zoomCameraToSelection( tourExperience.vars.camera);
 
     },
