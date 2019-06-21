@@ -51,6 +51,8 @@ var tourExperience = {
         //fake squares
         var helper = new THREE.GridHelper(width, 15, 'blue', 'blue');
         this.vars.scene.add(helper);
+        this.vars.scene.fog=new THREE.Fog(0x9999ff, 300, 700);
+
 
     },
     objTexture: function (color, wireframe) {
@@ -549,7 +551,7 @@ var tourExperience = {
         this.lightPoint(0xffffff, 1, 1000, 0, 1, 600, -600);
         this.lightPoint(0xffffff, 1, 1000, 0, -600, 600, 1);
         this.videoPlayer()
-        // this.lightHemisphere('silver', 'black', 1);
+        this.lightHemisphere('silver', 'black', 1);
         this.sceneFloor(1500, 1500, 'black', false);
         this.ojbLoader(this.vars.obj);
         this.evenListeners();
